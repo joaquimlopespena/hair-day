@@ -9,6 +9,7 @@ import InputText from "./components/input-text"
 import TimeSelect from "./components/time-select"
 import InputCalendar from "./components/input-calendar"
 import Container from "./components/container"
+import ScheduleCard from "./components/schedule-card"
 
 
 export default function App() {
@@ -47,6 +48,10 @@ export default function App() {
         </div>
         <div>
           <InputCalendar />
+        </div>
+
+        <div>
+          <ScheduleCard period="morning" periodLabel="Morning" timeRange="10:00 - 12:00" icon={CalendarIcon} appointments={[{ time: "10:00", name: "John Doe" }]} />
         </div>
       </Container>
     </>
