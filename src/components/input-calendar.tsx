@@ -1,8 +1,10 @@
 import { cva, type VariantProps } from "class-variance-authority";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { clsx } from "clsx";
 import Icon from "./icon";
 import { textVariants } from "./text";
+import CalendarIcon from "../assets/icons/calendar.svg?react";
+import CaretDownIcon from "../assets/icons/caret-down.svg?react";
 
 export const inputCalendarVariants = cva(
   `
@@ -21,15 +23,10 @@ export const inputCalendarVariants = cva(
         md: "px-4 py-3 text-base",
         lg: "px-5 py-4 text-lg",
       },
-      disabled: {
-        true: "opacity-50 pointer-events-none",
-        false: "",
-      },
     },
     defaultVariants: {
       state: "default",
       size: "md",
-      disabled: false,
     },
   }
 );
@@ -100,38 +97,60 @@ interface InputCalendarProps
   size?: "sm" | "md" | "lg";
 }
 
+function formatDateToBrazilian(date: string) {
+  if (!date) return "dd/mm/aaaa";
+  const [year, month, day] = date.split("-");
+  if (!year || !month || !day) return date;
+  return `${day}/${month}/${year}`;
+}
+
 export default function InputCalendar({
-  disabled,
   className,
   size,
   state: controlledState,
   icon,
+  value,
+  defaultValue,
+  onChange,
   ...props
 }: InputCalendarProps) {
   const [isFocused, setIsFocused] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [selectedDate, setSelectedDate] = useState<string>(() => {
+    if (typeof value === "string") return value;
+    if (typeof defaultValue === "string") return defaultValue;
+    return "";
+  });
+
+  useEffect(() => {
+    if (typeof value === "string") {
+      setSelectedDate(value);
+    }
+  }, [value]);
+
+  const openNativePicker = () => {
+    const input = inputRef.current;
+    if (!input) return;
+    input.focus();
+    (input as HTMLInputElement & { showPicker?: () => void }).showPicker?.();
+  };
+
   const currentState = controlledState ?? (isFocused ? "active" : "default");
 
   return (
     <div
       className={clsx(
-        inputCalendarVariants({ size, disabled: !!disabled, state: currentState }),
+        "relative",
+        inputCalendarVariants({ size, state: currentState }),
         className
       )}
+      onClick={openNativePicker}
     >
-      {icon && (
-        <Icon
-          svg={icon}
-          className={inputCalendarIconVariants({ state: currentState })}
-        />
-      )}
       <input
+        ref={inputRef}
         type="date"
-        className={clsx(
-          "flex-1 bg-transparent border-none outline-none",
-          textVariants({ variant: "text-md-regular" }),
-          "text-gray-100"
-        )}
-        disabled={!!disabled}
+        className="absolute inset-0 h-full w-full opacity-0 cursor-pointer scheme-dark"
+        value={selectedDate}
         onFocus={(e) => {
           setIsFocused(true);
           props.onFocus?.(e);
@@ -140,8 +159,31 @@ export default function InputCalendar({
           setIsFocused(false);
           props.onBlur?.(e);
         }}
+        onChange={(e) => {
+          setSelectedDate(e.target.value);
+          onChange?.(e);
+        }}
         {...props}
       />
+
+      <div className="pointer-events-none flex w-full items-center gap-2">
+        <Icon
+          svg={icon ?? CalendarIcon}
+          className={inputCalendarIconVariants({ state: currentState })}
+        />
+
+        <span
+          className={clsx(
+            "flex-1",
+            textVariants({ variant: "text-md-regular" }),
+            selectedDate ? "text-gray-100" : "text-gray-300"
+          )}
+        >
+          {formatDateToBrazilian(selectedDate)}
+        </span>
+
+        <Icon svg={CaretDownIcon} className="fill-gray-400" />
+      </div>
     </div>
   );
 }
