@@ -10,7 +10,7 @@ export default function CardAgenda() {
           <span className="text-md-regular">Consulte os seus cortes de cabelo agendados por dia</span>
         </div>
         <div>
-          <InputCalendar />
+          <InputCalendar size="sm" />
         </div>
       </div>
     </div>

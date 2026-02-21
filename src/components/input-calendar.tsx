@@ -8,7 +8,7 @@ import CaretDownIcon from "../assets/icons/caret-down.svg?react";
 
 export const inputCalendarVariants = cva(
   `
-  w-full flex items-center gap-2 px-4 py-3 rounded-lg
+  w-full flex items-center gap-2 rounded-lg
   bg-transparent border transition-colors
   focus:outline-none focus:ring-0
 `,

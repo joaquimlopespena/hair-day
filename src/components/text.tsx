@@ -16,25 +16,33 @@ export const textVariants = cva("font-sans text-gray-400", {
   }
 })
 
-interface TextProps extends VariantProps<typeof textVariants> {
-  as?: keyof React.JSX.IntrinsicElements;
+type TextElement = keyof React.JSX.IntrinsicElements;
+
+type TextOwnProps = VariantProps<typeof textVariants> & {
+  as?: TextElement;
   className?: string;
   children?: React.ReactNode;
-}
+};
+
+type TextProps<T extends TextElement> = TextOwnProps &
+  Omit<React.ComponentPropsWithoutRef<T>, keyof TextOwnProps | "as"> & {
+    as?: T;
+  };
 
 
 
-export default function Text({
-    as = "span",
+export default function Text<T extends TextElement = "span">({
+    as,
     variant,
     className,
     children,
     ...props
     
-}: TextProps) {
+}: TextProps<T>) {
+  const component = (as ?? "span") as TextElement;
 
   return createElement(
-    as,
+    component,
     {
       className: textVariants({ variant, className }),
       ...props
