@@ -39,7 +39,7 @@ export const inputTextVariants = cva(
   }
 );
 
-export const inputTextIconVariants = cva("transition", {
+export const inputTextIconVariants = cva("transition fill-yellow size-5", {
   variants: {
     state: {
       default: "fill-gray-400",

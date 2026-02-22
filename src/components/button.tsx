@@ -60,7 +60,7 @@ export default function Button({
                     className={buttonIconVariants({ variant: variant || "button-primary", size: size || "md" })}
                 />
             )}
-            <Text variant="text-md-regular">
+            <Text variant="text-md-bold" className=" text-gray-900 uppercase">
                 {children}
             </Text>
         </button>
